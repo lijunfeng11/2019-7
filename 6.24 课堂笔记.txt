@@ -1,0 +1,80 @@
+
+课堂笔记：
+1）大数据实验环境：
+	软件安装目录：/opt/app下;
+2）flume脚本编写规范：
+（1）第一部分：命名空间：
+	（a1 : flume的一个实例：agent
+	   r1 : source的别名
+	   k1 : sink的别名
+	   c1 : channel的别名）
+		a1.sources = r1
+		a1.sinks = k1
+		a1.channels = c1
+（2）第二部分：source组件的具体配置
+	  配置source的类型；每一种类型都代表着不同监听功能
+	  配置source的相关参数；
+（3）第三部分：sink组件的具体配置
+	  配置sink的类型；每一种类型都代表着不同发送功能
+	  配置sink的相关参数；
+（4）第四部分：channel组件的具体配置
+	  配置channel的类型；每一种类型都代表着不同监听功能
+	  配置channel的相关参数；
+（5）第五部分：将三个组件进行整合，从而封装 ：agent实例
+		#source与channel的关系
+		a1.sources.r1.channels = c1
+		#sink与channel的关系:
+		a1.sinks.k1.channel = c1
+		
+		（agent 对象：包含有三个属性：source、channel、sink）
+		
+flume 案例练习：
+1） 在/root/下，创建testData目录；
+2）切换到testData下，编写第一个flume脚本：flume01.conf
+3） 脚本内容（略）；
+4）执行脚本：
+	flume-ng agent -n a1 -f flume01.conf -D flume.root.logger=INFO,console
+5）测试：
+	（1）下载网络应用命令：telnet
+				yum install -y telnet   (注意：要求虚拟机可以访问外网)
+	 （2）访问指定端口：
+		[root@bigdata ~]# telnet 192.168.100.101 8888    （打开了该端口）
+		Trying 192.168.100.101...
+		Connected to 192.168.100.101.
+		Escape character is '^]'.
+		编写数据，回车
+	（3）查看flume日志是否显示端口中的数据；
+
+
+第二个flume案例：
+	需求：flume监听文件内容的变化，当文件内容有数据产生时，flume获取数据，然后打印到控制台；
+1）编写flume02.conf
+		#source类型：exec ,监听一个文件内容的变化
+		a1.sources.r1.type = exec
+		#指定监听的文件：
+		a1.sources.r1.command = tail -F /root/testData/test.log
+2）运行脚本：
+	[root@bigdata testData]# flume-ng agent -n a1 -f flume02.conf -D flume.root.logger=INFO,console
+3）测试：
+	[root@bigdata testData]# touch test.log
+	[root@bigdata testData]# echo "gongchengxueyuan" >> test.log 
+	
+在项目中，flume操作：
+1）flumeProject.conf脚本：
+2）因为要操作HDFS，所以启动HDFS集群；
+3）准备数据文件：windows下的access.log 文件，然后该文件中的内容全部复制；
+4）模拟用户的数据产生：
+		(1)vim /root/testData/access.log
+		(2)将复制的内容，全部粘贴到该文件中；
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+		
